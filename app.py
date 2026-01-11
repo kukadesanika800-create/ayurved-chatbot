@@ -1,6 +1,4 @@
 import streamlit as st
-from gtts import gTTS
-import os
 
 st.set_page_config(page_title="आयुर्वेदिक प्रकृती & अग्नी चॅटबॉट")
 st.title("🌿 आयुर्वेदिक प्रकृती & अग्नी चॅटबॉट")
@@ -63,7 +61,7 @@ for q in agni_questions:
 st.markdown("---")  
 
 # Result button
-if st.button("परिणाम पहा"):
+if st.button("Result"):
     prakriti = max(prakriti_score, key=prakriti_score.get)
     agni = max(agni_score, key=agni_score.get)
 
@@ -119,22 +117,9 @@ if st.button("परिणाम पहा"):
 """
     st.info(ai_text)
 
-   # ✅ gTTS voice directly memory मध्ये (Cloud safe)
-    tts = gTTS(text=ai_text, lang="mr")
-    audio_bytes = io.BytesIO()
-    tts.write_to_fp(audio_bytes)
-    audio_bytes.seek(0)
-    st.audio(audio_bytes, format="audio/mp3")
-
-    st.subheader("🤖 AI आयुर्वेदिक चॅटबॉट")
+ st.subheader("🤖 AI आयुर्वेदिक चॅटबॉट")
     user_input = st.text_input("आपला प्रश्न टाका")
     if user_input:
         response = f"तुमच्या प्रकृती {prakriti} आणि अग्नी {agni} नुसार: {user_input} साठी योग्य आहार व दिनचर्या पाळा."
         st.markdown(f"**तुमचे प्रश्न:** {user_input}")
         st.markdown(f"**AI उत्तर:** {response}")
-
-        tts_chat = gTTS(text=response, lang="mr")
-        audio_bytes = io.BytesIO()
-        tts_chat.write_to_fp(audio_bytes)
-        audio_bytes.seek(0)
-        st.audio(audio_bytes, format="audio/mp3")
