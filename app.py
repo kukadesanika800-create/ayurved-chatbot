@@ -1,19 +1,7 @@
 import streamlit as st
-import pyttsx3
-engine = pyttsx3.init()
-voices = engine.getProperty('voices')
-
-for voice in voices:
-    if "female" in voice.name.lower() or "zira" in voice.name.lower():
-        engine.setProperty('voice', voice.id)
-        break
-
-engine.setProperty('rate', 160)
-
-def speak(text):
-    engine.say(text)
-    engine.runAndWait()
-
+from gtts import gTTS
+import os
+st.set_page_config(page_title="Ayurvedic Prakriti & Agni Chatbot")
 st.title("🌿 Ayurvedic Prakriti & Agni Chatbot")
 
 st.write("Answer the questions honestly to know your Prakriti and Agni type.")
@@ -68,10 +56,15 @@ for q in agni_questions:
         agni_score["Vishamagni"] += 1
     else:
         agni_score["Mandagni"] += 1
-
+        st.markdown("---")  
 if st.button("Get Result"):
-    st.success(f"🌿 Your Prakriti: {max(prakriti_score, key=prakriti_score.get)}")
-    st.success(f"🔥 Your Agni Type: {max(agni_score, key=agni_score.get)}")
+    prakriti = max(prakriti_score, key=prakriti_score.get)
+    agni = max(agni_score, key=agni_score.get)
+
+    st.success(f"🌿 Your Prakriti: {prakriti}")
+    st.success(f"🔥 Your Agni Type: {agni}")
+    st.info("This is a preliminary assessment. Consult an Ayurvedic doctor for treatment.")
+    
     st.subheader("🌿 Aahar, Vihar & Daily Routine")
 if prakriti == "Vata":
     st.markdown("### 🥗 Aahar")
@@ -105,14 +98,36 @@ elif prakriti == "Kapha":
     st.subheader("🤖 AI Ayurvedic Explanation")
 
 ai_text = f"""
-Your Prakriti is {prakriti} and your Agni is {agni}.
-Based on this, your body needs proper diet, lifestyle and routine.
-Please follow the suggested Aahar, Vihar and Dinacharya.
+नमस्कार 🌸  
+तुमची प्रकृती **{prakriti}** आहे  
+आणि तुमचा अग्नी **{agni}** आहे.
+
+याचा अर्थ असा की,
+तुमच्या शरीराची कार्यपद्धत,
+पचनशक्ती आणि ऊर्जा
+या गोष्टी या प्रकृतीवर अवलंबून असतात.
+
+योग्य आहार, विहार आणि दिनचर्या पाळल्यास
+तुमचे आरोग्य नक्कीच सुधारेल.
 """
+st.info(ai_text)
 
-st.write(ai_text)
+    tts = gTTS(text=ai_text, lang="mr")
+    tts.save("voice.mp3")
 
-if st.button("🔊 Listen AI Explanation (Female Voice)"):
-    speak(ai_text)
-    
-    st.info("This is a preliminary assessment. Consult an Ayurvedic doctor for treatment.")
+    audio_file = open("voice.mp3", "rb")
+    audio_bytes = audio_file.read()
+    st.audio(audio_bytes, format="audio/mp3")
+ st.subheader("🤖 AI Ayurvedic Chatbot")
+    user_input = st.text_input("आपला प्रश्न टाका (उदा. माझा पचन कमी आहे, काय करावे?)")
+    if user_input:
+        response = f"तुमच्या प्रकृती {prakriti} आणि अग्नी {agni} नुसार: {user_input} साठी योग्य आहार व दिनचर्या पाळा."
+        st.markdown(f"**You:** {user_input}")
+        st.markdown(f"**AI:** {response}")
+
+        # Voice output for chat
+        tts_chat = gTTS(text=response, lang="mr")
+        tts_chat.save("chat_voice.mp3")
+        audio_file = open("chat_voice.mp3", "rb")
+        audio_bytes = audio_file.read()
+        st.audio(audio_bytes, format="audio/mp3")
