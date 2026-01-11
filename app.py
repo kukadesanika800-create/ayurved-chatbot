@@ -119,23 +119,22 @@ if st.button("परिणाम पहा"):
 """
     st.info(ai_text)
 
-    # Voice output
+   # ✅ gTTS voice directly memory मध्ये (Cloud safe)
     tts = gTTS(text=ai_text, lang="mr")
-    tts.save("voice.mp3")
-    audio_file = open("voice.mp3", "rb")
-    audio_bytes = audio_file.read()
+    audio_bytes = io.BytesIO()
+    tts.write_to_fp(audio_bytes)
+    audio_bytes.seek(0)
     st.audio(audio_bytes, format="audio/mp3")
 
     st.subheader("🤖 AI आयुर्वेदिक चॅटबॉट")
-    user_input = st.text_input("आपला प्रश्न टाका (उदा. माझा पचन कमी आहे, काय करावे?)")
+    user_input = st.text_input("आपला प्रश्न टाका")
     if user_input:
         response = f"तुमच्या प्रकृती {prakriti} आणि अग्नी {agni} नुसार: {user_input} साठी योग्य आहार व दिनचर्या पाळा."
         st.markdown(f"**तुमचे प्रश्न:** {user_input}")
         st.markdown(f"**AI उत्तर:** {response}")
 
-        # Voice output for chat
         tts_chat = gTTS(text=response, lang="mr")
-        tts_chat.save("chat_voice.mp3")
-        audio_file = open("chat_voice.mp3", "rb")
-        audio_bytes = audio_file.read()
+        audio_bytes = io.BytesIO()
+        tts_chat.write_to_fp(audio_bytes)
+        audio_bytes.seek(0)
         st.audio(audio_bytes, format="audio/mp3")
